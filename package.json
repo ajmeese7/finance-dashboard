@@ -1,0 +1,23 @@
+{
+  "name": "stocks-dashboard",
+  "version": "1.0.0",
+  "description": "A dashboard to track performance of your stocks over time.",
+  "repository": "https://github.com/ajmeese7/stocks-dashboard.git",
+  "author": "Aaron Meese <ajmeese7@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "bootstrap": "^4.6.0",
+    "isomorphic-unfetch": "^3.1.0",
+    "next": "^10.0.0",
+    "react": "17.0.1",
+    "react-bootstrap": "^1.5.2",
+    "react-dom": "17.0.1"
+  }
+}
