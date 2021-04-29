@@ -21,10 +21,12 @@ export default function TickerSearch({ backend_url }) {
 
 	const updateTrackedTickers = async (tickerSymbol) => {
 		if (tickerAlreadyTracked(tickerSymbol)) {
+			// Removes ticker from tracked list
 			const newTickerList =
 				trackedTickers.filter(trackedTicker => trackedTicker.symbol !== tickerSymbol)
 			setTrackedTickers(newTickerList)
 		} else {
+			// Adds ticker data to tracked list
 			const tickerData = await getTickerData(tickerSymbol, backend_url)
 			setTrackedTickers([...trackedTickers, tickerData])
 		}
@@ -33,25 +35,29 @@ export default function TickerSearch({ backend_url }) {
 	return (
 		<>
 			<form onSubmit={displayTickers}>
-				<input name="ticker" type="text" placeholder="Ticker or company name" autoComplete="off" required />
+				<input name="ticker" type="text" placeholder="Ticker or Company Name" autoComplete="off" required />
 				<button type="submit">Search</button>
 			</form>
 
-			{/* TODO: Make the fade for individual elements, delay between (cascade) */}
-			{/* https://www.react-reveal.com/examples/common/Fade */}
-			{tickers && tickers.map((ticker, index) => (
-				<Fade bottom distance={"50px"} key={index}>
-					<div className="ticker">
-						<p>{ticker.symbol} - {ticker.name}</p>
-						<button
-							className="trackTicker"
-							onClick={() => updateTrackedTickers(ticker.symbol)}
-						>
-							{tickerAlreadyTracked(ticker.symbol) ? "✔ Tracked" : "Track"}
-						</button>
-					</div>
-				</Fade>
-			))}
+			{/* TODO: Make the fade delay work after the first render */}
+			<div id="tickerSearchResults">
+				{tickers && tickers.map((ticker, index) => {
+					let tickerTracked = tickerAlreadyTracked(ticker.symbol);
+					return (
+						<Fade bottom distance={"50px"} delay={index * 250} key={index}>
+							<div className="ticker">
+								<p>{ticker.symbol} - {ticker.name}</p>
+								<button
+									className={"trackTicker " + (tickerTracked ? 'trackTicker_selected' : '')}
+									onClick={() => updateTrackedTickers(ticker.symbol)}
+								>
+									{tickerTracked ? "✔ Tracked" : "Track"}
+								</button>
+							</div>
+						</Fade>
+					)})
+				}
+			</div>
 		</>
 	)
 }

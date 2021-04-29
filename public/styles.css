@@ -28,12 +28,30 @@ body {
 	align-items: center;
 }
 
+#tickerSearchResults {
+	display: inline-block;
+}
 .ticker {
 	display: flex;
 	flex-direction: row;
+	vertical-align: middle;
 }
 .ticker p {
 	text-align: left;
+	margin: 1em;
+}
+.trackTicker {
+	margin: 5px;
+	margin-left: auto;
+	height: 2.5em;
+	align-self: center;
+	border: 1px solid gray;
+	border-radius: 0.15em;
+	cursor: pointer;
+	width: 78px;
+}
+.trackTicker_selected {
+	background-color: lightgreen;
 }
 
 main {
