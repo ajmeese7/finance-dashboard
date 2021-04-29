@@ -19,6 +19,14 @@ A dashboard to track performance of your stocks over time.
 - `venv/scripts/Activate.ps1` for Powershell, `venv/scripts/activate.bat` for cmd
 - `pip install -r requirement.txt`
 
+#### Run
+- `venv/scripts/Activate.ps1`
+- `python app.py`
+
+#### Add new packages
+- `pip install package_names`
+- `pip freeze > requirements.txt`
+
 ### NextJS App
 #### Install
 - `yarn`
