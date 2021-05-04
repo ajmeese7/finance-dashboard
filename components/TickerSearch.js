@@ -72,8 +72,7 @@ const defaultGetHeaders = () => ({
 
 /** Check if a response contains an error code. */
 function checkError(response) {
-	// response.ok may work as well; test ternary operator method
-	if (response.status >= 200 && response.status <= 299) {
+	if (response.ok) {
 		return response.json()
 	} else {
 		throw Error(response.statusText)
