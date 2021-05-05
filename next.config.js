@@ -4,6 +4,7 @@ module.exports = {
     webpack5: true,
   },
   publicRuntimeConfig: {
+    // TODO: Fix as detailed in README
     IS_LOCAL_DEV: process.argv.includes('dev')
   }
 }

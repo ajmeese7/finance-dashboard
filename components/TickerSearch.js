@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Fade from 'react-reveal/Fade'
 
-export default function TickerSearch({ backend_url }) {
+export default function TickerSearch(props) {
 	const [tickers, setTickers] = useState([])
 	// TODO: Pull this from a DB
 	const [trackedTickers, setTrackedTickers] = useState([])
@@ -11,7 +11,7 @@ export default function TickerSearch({ backend_url }) {
 		event.preventDefault()
 
 		const name = event.target.ticker.value
-		const tickers = await getTickers(name, backend_url)
+		const tickers = await getTickers(name)
 		setTickers(tickers)
 	}
 
@@ -27,7 +27,7 @@ export default function TickerSearch({ backend_url }) {
 			setTrackedTickers(newTickerList)
 		} else {
 			// Adds ticker data to tracked list
-			const tickerData = await getTickerData(tickerSymbol, backend_url)
+			const tickerData = await getTickerData(tickerSymbol)
 			setTrackedTickers([...trackedTickers, tickerData])
 		}
 	}
@@ -42,7 +42,10 @@ export default function TickerSearch({ backend_url }) {
 			{/* TODO: Make the fade delay work after the first render */}
 			<div id="tickerSearchResults">
 				{tickers && tickers.map((ticker, index) => {
-					let tickerTracked = tickerAlreadyTracked(ticker.symbol);
+					// IDEA: 'Roll up' button to close the search when user is done;
+					// can initially 'roll down' to results maybe as they load in, moving
+					// the rest of the page rather than covering content, or intentionally cover
+					let tickerTracked = tickerAlreadyTracked(ticker.symbol)
 					return (
 						<Fade bottom distance={"50px"} delay={index * 250} key={index}>
 							<div className="ticker">
@@ -51,6 +54,7 @@ export default function TickerSearch({ backend_url }) {
 									className={"trackTicker " + (tickerTracked ? 'trackTicker_selected' : '')}
 									onClick={() => updateTrackedTickers(ticker.symbol)}
 								>
+									{/* IDEA: Animate text change with a poof or something */}
 									{tickerTracked ? "✔ Tracked" : "Track"}
 								</button>
 							</div>
@@ -87,16 +91,19 @@ const getJSONDataSafely = async (url) => {
 }
 
 /** Searches API for user query and returns related stock tickers. */
-const getTickers = async (name, backend_url) => {
-	const url = `${backend_url}/get_tickers/${name}`
+const getTickers = async (name) => {
+	const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/get_tickers/${name}`
 	const result = await getJSONDataSafely(url)
+
+	// TODO: Implement popups on error for user to see, and option to send all their
+	// logs to me in a debug report. Can happen if Python not started, etc.
 	if (!result) return console.warn("Unable to get tickers for specified query...")
 	return result
 }
 
-// NOTE: In theory, could have a getData() with `endpoint` and `param` arguments...
-const getTickerData = async (ticker, backend_url) => {
-	const url = `${backend_url}/get_ticker_data/${ticker}`
+/** Searches API for stock ticker and returns related performance data. */
+const getTickerData = async (ticker) => {
+	const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/get_ticker_data/${ticker}`
 	const result = await getJSONDataSafely(url)
 	if (!result) return console.warn("Unable to get data for specified ticker...")
 	return result
