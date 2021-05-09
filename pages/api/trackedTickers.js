@@ -5,11 +5,10 @@ import middleware from '../../middleware/database'
 // instead of having it across multiple files
 const handler = nextConnect()
 handler.use(middleware)
-const collection = 'users'
 
 handler.get(async (req, res) => {
 	const user = req.query.user;
-	const result = await req.db.collection(collection)
+	const result = await req.collection
 		.find({ user: user }, { 'projection': { 'trackedTickers': 1 }})
 		.next()
 	
@@ -22,7 +21,7 @@ handler.post(async (req, res) => {
 	const user = data.user, tickers = data.trackedTickers
 	if (!tickers) res.status(400).json({ message: 'Invalid call to POST endpoint!' })
 	
-	let result = await req.db.collection(collection).updateOne(
+	let result = await req.collection.updateOne(
 		{ user: user },
 		{ $set: { trackedTickers: tickers }},
 		{ upsert: true }
