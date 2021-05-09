@@ -90,45 +90,9 @@ export default function TickerSearch(props) {
 	)
 }
 
-/** Optional headers for every fetch request. */
-const defaultGetHeaders = () => ({
-	headers: {
-		'Content-Type': 'application/json'
-	},
-	method: 'GET'
-})
-
-/** Check if a response contains an error code. */
-function checkError(response) {
-	if (response.ok) {
-		return response.json()
-	} else {
-		throw Error(response.statusText)
-	}
-}
-
-/** Returns JSON data if request succeeds or null if not. */
-const getJSONDataSafely = async (url) => {
-	return await fetch(url, defaultGetHeaders)
-		.then(checkError)
-		.catch((err) => console.error(err))
-}
-
 /** Searches API for user query and returns related stock tickers. */
 const getTickers = async (name) => {
-	const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/get_tickers/${name}`
-	const result = await getJSONDataSafely(url)
-
-	// TODO: Implement popups on error for user to see, and option to send all their
-	// logs to me in a debug report. Can happen if Python not started, etc.
-	if (!result) return console.warn("Unable to get tickers for specified query...")
-	return result
-}
-
-/** Searches API for stock ticker and returns related performance data. */
-const getTickerData = async (ticker) => {
-	const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/get_ticker_data/${ticker}`
-	const result = await getJSONDataSafely(url)
-	if (!result) return console.warn("Unable to get data for specified ticker...")
-	return result
+	// TODO: Handle when res.json() is empty
+	const res = await fetch(`${API_URL}/get_tickers?name=${name}`)
+	return await res.json()
 }

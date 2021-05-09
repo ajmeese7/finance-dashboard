@@ -7,7 +7,7 @@ const handler = nextConnect()
 handler.use(middleware)
 
 handler.get(async (req, res) => {
-	const user = req.query.user;
+	const user = req.query.user
 	const result = await req.collection
 		.find({ user: user }, { 'projection': { 'trackedTickers': 1 }})
 		.next()
