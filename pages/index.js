@@ -2,6 +2,8 @@ import Head from 'next/head'
 import TickerSearch from '../components/TickerSearch'
 import { signIn, signOut, useSession } from 'next-auth/client'
 
+// TODO: Once this is done, try to break my own security with the
+// session manager tool
 export default function Page(props) {
 	const [session, loading] = useSession()
 

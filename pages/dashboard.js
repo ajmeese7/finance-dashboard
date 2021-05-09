@@ -11,6 +11,7 @@ export default function Dashboard({ user }) {
 	)
 }
 
+// IDEA: Make this a global function to get user on any page?
 export async function getServerSideProps(ctx) {
 	const session = await getSession(ctx)
 	if (!session) {

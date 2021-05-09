@@ -14,9 +14,12 @@
   "dependencies": {
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
+    "dotenv": "^9.0.0",
     "isomorphic-unfetch": "^3.1.0",
+    "mongodb": "^3.6.6",
     "next": "^10.0.0",
     "next-auth": "^3.19.8",
+    "next-connect": "^0.10.1",
     "react": "17.0.1",
     "react-bootstrap": "^1.5.2",
     "react-dom": "17.0.1",

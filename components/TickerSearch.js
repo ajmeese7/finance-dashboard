@@ -1,12 +1,39 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Fade from 'react-reveal/Fade'
+import fetch from 'isomorphic-unfetch'
+import { useSession } from 'next-auth/client'
+const API_URL = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/api`
 
 export default function TickerSearch(props) {
+	// TODO: See if I can use the data.js method instead, or something similar
+	const [session, loading] = useSession()
 	const [tickers, setTickers] = useState([])
-	// TODO: Pull this from a DB
 	const [trackedTickers, setTrackedTickers] = useState([])
 
-	// TODO: Redux to globally handle tracked tickers, then go from there
+	// Ensures trackedTickers useEffect doesn't run on initial 
+	// state population with the empty useEffect function
+	const alreadySetTrackedTickers = useRef(false)
+
+	useEffect(async () => {
+		// Sets trackedTickers asynchrously on initial render
+		const res = await fetch(`${API_URL}/trackedTickers?user=${session.user.email}`)
+		const json = await res.json()
+		setTrackedTickers(json.trackedTickers)
+		alreadySetTrackedTickers.current = true
+	}, [])
+
+	useEffect(async () => {
+		// Updates the server data when the user's trackedTicker list is modified
+		if (!alreadySetTrackedTickers.current) return
+		const res = await fetch(`${API_URL}/trackedTickers`, {
+			method: 'post',
+			body: JSON.stringify({
+				user: session.user.email,
+				trackedTickers: trackedTickers
+			})
+		})
+	}, [trackedTickers])
+
 	const displayTickers = async (event) => {
 		event.preventDefault()
 
@@ -15,20 +42,14 @@ export default function TickerSearch(props) {
 		setTickers(tickers)
 	}
 
-	const tickerAlreadyTracked = (tickerSymbol) =>
-		trackedTickers.length > 0 &&
-			trackedTickers.filter(trackedTicker => trackedTicker.symbol === tickerSymbol).length > 0
-
 	const updateTrackedTickers = async (tickerSymbol) => {
-		if (tickerAlreadyTracked(tickerSymbol)) {
+		if (trackedTickers.includes(tickerSymbol)) {
 			// Removes ticker from tracked list
-			const newTickerList =
-				trackedTickers.filter(trackedTicker => trackedTicker.symbol !== tickerSymbol)
+			const newTickerList = trackedTickers.filter(symbol => symbol !== tickerSymbol)
 			setTrackedTickers(newTickerList)
 		} else {
 			// Adds ticker data to tracked list
-			const tickerData = await getTickerData(tickerSymbol)
-			setTrackedTickers([...trackedTickers, tickerData])
+			setTrackedTickers([...trackedTickers, tickerSymbol])
 		}
 	}
 
@@ -45,7 +66,10 @@ export default function TickerSearch(props) {
 					// IDEA: 'Roll up' button to close the search when user is done;
 					// can initially 'roll down' to results maybe as they load in, moving
 					// the rest of the page rather than covering content, or intentionally cover
-					let tickerTracked = tickerAlreadyTracked(ticker.symbol)
+
+					// TODO: Somehow clear the previous render of this part of the 
+					// page to get the Fade effect to run again; component maybe?
+					let tickerTracked = trackedTickers.includes(ticker.symbol)
 					return (
 						<Fade bottom distance={"50px"} delay={index * 250} key={index}>
 							<div className="ticker">
