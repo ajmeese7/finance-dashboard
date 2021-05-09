@@ -60,18 +60,17 @@ export default function TickerSearch(props) {
 				<button type="submit">Search</button>
 			</form>
 
-			{/* TODO: Make the fade delay work after the first render */}
 			<div id="tickerSearchResults">
 				{tickers && tickers.map((ticker, index) => {
 					// IDEA: 'Roll up' button to close the search when user is done;
 					// can initially 'roll down' to results maybe as they load in, moving
 					// the rest of the page rather than covering content, or intentionally cover
 
-					// TODO: Somehow clear the previous render of this part of the 
-					// page to get the Fade effect to run again; component maybe?
+					// Forces the component to re-render each time, allowing the animation to play again
+					let key = Date.now() + (index * 1000)
 					let tickerTracked = trackedTickers.includes(ticker.symbol)
 					return (
-						<Fade bottom distance={"50px"} delay={index * 250} key={index}>
+						<Fade bottom distance={"50px"} delay={index * 250} key={key}>
 							<div className="ticker">
 								<p>{ticker.symbol} - {ticker.name}</p>
 								<button
