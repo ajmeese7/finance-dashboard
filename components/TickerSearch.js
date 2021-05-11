@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/client'
 const API_URL = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/api`
 
 export default function TickerSearch(props) {
-	// TODO: See if I can use the data.js method instead, or something similar
 	const [session, loading] = useSession()
 	const [tickers, setTickers] = useState([])
 	const [trackedTickers, setTrackedTickers] = useState([])

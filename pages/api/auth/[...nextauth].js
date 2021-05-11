@@ -13,13 +13,13 @@ const options = {
 	],
 	secret: process.env.SECRET,
 	callbacks: {
-		redirect: async (url, _) => {
+		/*redirect: async (url, _) => {
 			if (url === '/api/auth/signin') {
 				return Promise.resolve('/profile')
 			}
 			return Promise.resolve('/api/auth/signin')
-		},
-},
+		},*/
+	},
 }
 
 export default (req, res) => NextAuth(req, res, options)

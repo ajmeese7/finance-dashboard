@@ -1,22 +1,16 @@
 import { useSession } from 'next-auth/client'
-import dynamic from 'next/dynamic'
-
-const UnauthenticatedComponent = dynamic(() =>
-	import('../components/unauthenticated')
-)
-const AuthenticatedComponent = dynamic(() =>
-	import('../components/authenticated')
-)
+import Login from '../components/Login'
+import Loading from '../components/Loading'
 
 export default function Profile() {
 	const [session, loading] = useSession()
+	if (loading) return <Loading />
+	if (!loading && !session) return <Login />
 
-	// TODO: Custom loader
-	if (typeof window !== 'undefined' && loading) return <p>Loading...</p>
-
-	// TODO: Render into login screen here (with the `auto-created` option)
-	// and have all this display after the regular landing site
-	if (!session) return <UnauthenticatedComponent />
-
-	return <AuthenticatedComponent user={session.user} />
+	return (
+		<div>
+			<h1>Profile</h1>
+			<p>Welcome {session.user.email}</p>
+		</div>
+	)
 }

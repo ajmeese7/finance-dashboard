@@ -1,17 +1,13 @@
 import Head from 'next/head'
 import TickerSearch from '../components/TickerSearch'
-import { signIn, signOut, useSession } from 'next-auth/client'
+import Login from '../components/Login'
+import Loading from '../components/Loading'
+import { signOut, useSession } from 'next-auth/client'
 
-// TODO: Once this is done, try to break my own security with the
-// session manager tool
 export default function Page(props) {
 	const [session, loading] = useSession()
-
-	// TODO: Should this be replaced with the method in `profile.js`?
-		// Also the same TODO, add a custom loader...
-	if (loading) {
-		return <p>Loading...</p>
-	}
+	if (loading) return <Loading />
+	if (!loading && !session) return <Login />
 
 	return (
 		<div className="container">
@@ -20,15 +16,12 @@ export default function Page(props) {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
-			{!session && signIn()}
-			{session && (
-				<>
-					Signed in as {session.user.email} <br />
-					<button onClick={signOut}>Sign out</button>
+			<>
+				Signed in as {session.user.email} <br />
+				<button onClick={signOut}>Sign out</button>
 
-					<TickerSearch />
-				</>
-			)}
+				<TickerSearch />
+			</>
 		</div>
 	)
 }

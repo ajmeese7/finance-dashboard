@@ -1,29 +1,17 @@
-import { getSession } from 'next-auth/client'
+//import withAuth from '../middleware/auth'
+import { useSession } from 'next-auth/client'
+import Login from '../components/Login'
+import Loading from '../components/Loading'
 
-export default function Dashboard({ user }) {
-	// TODO: See what it says in that slight flash, and how to prevent it from happening;
-		// on /dashboard navigation when no session
+export default function Dashboard() {
+	const [session, loading] = useSession()
+	if (loading) return <Loading />
+	if (!loading && !session) return <Login />
+
 	return (
 		<div>
 			<h1>Dashboard</h1>
-			<p>Welcome {user.email}</p>
+			<p>Welcome {session.user.email}</p>
 		</div>
 	)
-}
-
-// IDEA: Make this a global function to get user on any page?
-export async function getServerSideProps(ctx) {
-	const session = await getSession(ctx)
-	if (!session) {
-		// Automatically redirects user to main page if no session
-		ctx.res.writeHead(302, { Location: '/' })
-		ctx.res.end()
-		return { props: {} }
-	}
-
-	return {
-		props: {
-			user: session.user,
-		},
-	}
 }
