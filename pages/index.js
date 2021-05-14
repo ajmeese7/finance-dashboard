@@ -16,12 +16,10 @@ export default function Page(props) {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 
-			<>
-				Signed in as {session.user.email} <br />
-				<button onClick={signOut}>Sign out</button>
+			<h1>Dashboard</h1>
+			<p>Welcome {session.user.email}</p>
 
-				<TickerSearch />
-			</>
+			<TickerSearch />
 		</div>
 	)
 }

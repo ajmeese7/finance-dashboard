@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
+import {
+	Input,
+} from 'reactstrap'
 import Fade from 'react-reveal/Fade'
 import fetch from 'isomorphic-unfetch'
 import { useSession } from 'next-auth/client'
@@ -6,6 +9,7 @@ const API_URL = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/api`
 
 export default function TickerSearch(props) {
 	const [session, loading] = useSession()
+	const [search, setSearch] = useState('')
 	const [tickers, setTickers] = useState([])
 	const [trackedTickers, setTrackedTickers] = useState([])
 
@@ -13,16 +17,16 @@ export default function TickerSearch(props) {
 	// state population with the empty useEffect function
 	const alreadySetTrackedTickers = useRef(false)
 
+	// Sets trackedTickers asynchrously on initial render
 	useEffect(async () => {
-		// Sets trackedTickers asynchrously on initial render
 		const res = await fetch(`${API_URL}/trackedTickers?user=${session.user.email}`)
 		const json = await res.json()
 		setTrackedTickers(json.trackedTickers)
 		alreadySetTrackedTickers.current = true
 	}, [])
 
+	// Updates the server data when the user's trackedTicker list is modified
 	useEffect(async () => {
-		// Updates the server data when the user's trackedTicker list is modified
 		if (!alreadySetTrackedTickers.current) return
 		const res = await fetch(`${API_URL}/trackedTickers`, {
 			method: 'post',
@@ -33,14 +37,17 @@ export default function TickerSearch(props) {
 		})
 	}, [trackedTickers])
 
+	// Changes the mapped array of tickers beneath the search bar
 	const displayTickers = async (event) => {
 		event.preventDefault()
 
-		const name = event.target.ticker.value
+		const name = event.target.value
+		setSearch(name)
 		const tickers = await getTickers(name)
 		setTickers(tickers)
 	}
 
+	// Adds or removes tickers from tracked ticker list
 	const updateTrackedTickers = async (tickerSymbol) => {
 		if (trackedTickers.includes(tickerSymbol)) {
 			// Removes ticker from tracked list
@@ -54,22 +61,20 @@ export default function TickerSearch(props) {
 
 	return (
 		<>
-			<form onSubmit={displayTickers}>
-				<input name="ticker" type="text" placeholder="Ticker or Company Name" autoComplete="off" required />
-				<button type="submit">Search</button>
-			</form>
+			<Input
+				name="ticker"
+				type="text"
+				placeholder="Ticker or Company Name"
+				autoComplete="off"
+				onChange={displayTickers}
+			/>
 
 			<div id="tickerSearchResults">
-				{tickers && tickers.map((ticker, index) => {
-					// IDEA: 'Roll up' button to close the search when user is done;
-					// can initially 'roll down' to results maybe as they load in, moving
-					// the rest of the page rather than covering content, or intentionally cover
-
-					// Forces the component to re-render each time, allowing the animation to play again
-					let key = Date.now() + (index * 1000)
+				{tickers.map((ticker, index) => {
 					let tickerTracked = trackedTickers.includes(ticker.symbol)
 					return (
-						<Fade bottom distance={"50px"} delay={index * 250} key={key}>
+						// Key forces the component to re-render for animations only on search change
+						<Fade bottom distance={"50px"} delay={index * 100} key={search + index}>
 							<div className="ticker">
 								<p>{ticker.symbol} - {ticker.name}</p>
 								<button
@@ -90,7 +95,7 @@ export default function TickerSearch(props) {
 
 /** Searches API for user query and returns related stock tickers. */
 const getTickers = async (name) => {
-	// TODO: Handle when res.json() is empty
 	const res = await fetch(`${API_URL}/get_tickers?name=${name}`)
-	return await res.json()
+	const json = await res.json()
+	return json
 }
