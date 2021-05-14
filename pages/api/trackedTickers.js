@@ -1,14 +1,12 @@
 import nextConnect from 'next-connect'
 import middleware from '../../middleware/database'
-
-// TODO: See if I can abstract this to an API route creator function
-// instead of having it across multiple files
 const handler = nextConnect()
 handler.use(middleware)
+const collectionName = 'users'
 
 handler.get(async (req, res) => {
 	const user = req.query.user
-	const result = await req.collection
+	const result = await req.db.collection(collectionName)
 		.find({ user: user }, { 'projection': { 'trackedTickers': 1 }})
 		.next()
 	
@@ -21,7 +19,7 @@ handler.post(async (req, res) => {
 	const user = data.user, tickers = data.trackedTickers
 	if (!tickers) res.status(400).json({ message: 'Invalid call to POST endpoint!' })
 	
-	let result = await req.collection.updateOne(
+	let result = await req.db.collection(collectionName).updateOne(
 		{ user: user },
 		{ $set: { trackedTickers: tickers }},
 		{ upsert: true }
