@@ -1,5 +1,5 @@
 import { Provider } from 'next-auth/client'
-import '../public/styles.css'
+import '../public/styles.scss'
 import 'bootstrap/dist/css/bootstrap.css'
 
 export default function MyApp({ Component, pageProps }) {

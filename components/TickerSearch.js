@@ -11,31 +11,19 @@ export default function TickerSearch(props) {
 	const [session, loading] = useSession()
 	const [search, setSearch] = useState('')
 	const [tickers, setTickers] = useState([])
-	const [trackedTickers, setTrackedTickers] = useState([])
-
-	// Ensures trackedTickers useEffect doesn't run on initial 
-	// state population with the empty useEffect function
-	const alreadySetTrackedTickers = useRef(false)
-
-	// Sets trackedTickers asynchrously on initial render
-	useEffect(async () => {
-		const res = await fetch(`${API_URL}/trackedTickers?user=${session.user.email}`)
-		const json = await res.json()
-		setTrackedTickers(json.trackedTickers)
-		alreadySetTrackedTickers.current = true
-	}, [])
+	const [trackedTickers, setTrackedTickers] = useState(props.trackedTickers)
 
 	// Updates the server data when the user's trackedTicker list is modified
 	useEffect(async () => {
-		if (!alreadySetTrackedTickers.current) return
-		const res = await fetch(`${API_URL}/trackedTickers`, {
+		if (!session) return
+		const res = await fetch(`${API_URL}/tracked_tickers`, {
 			method: 'post',
 			body: JSON.stringify({
-				user: session.user.email,
+				email: session.user.email,
 				trackedTickers: trackedTickers
 			})
 		})
-	}, [trackedTickers])
+	}, [trackedTickers, session])
 
 	// Changes the mapped array of tickers beneath the search bar
 	const displayTickers = async (event) => {
@@ -60,18 +48,21 @@ export default function TickerSearch(props) {
 	}
 
 	return (
-		<>
+		<div id="tickerSearch">
 			<Input
-				name="ticker"
+				name="search"
 				type="text"
 				placeholder="Ticker or Company Name"
 				autoComplete="off"
 				onChange={displayTickers}
 			/>
 
-			<div id="tickerSearchResults">
+			<div
+				id="tickerSearchResults"
+				className="border border-dark"
+			>
 				{tickers.map((ticker, index) => {
-					let tickerTracked = trackedTickers.includes(ticker.symbol)
+					const tickerTracked = trackedTickers.includes(ticker.symbol)
 					return (
 						// Key forces the component to re-render for animations only on search change
 						<Fade bottom distance={"50px"} delay={index * 100} key={search + index}>
@@ -88,8 +79,12 @@ export default function TickerSearch(props) {
 						</Fade>
 					)})
 				}
+
+				{tickers.length == 0 && (
+					<p className="text-muted text-center m-3 user-select-none">Go ahead, search for a stock!</p>
+				)}
 			</div>
-		</>
+		</div>
 	)
 }
 

@@ -1,0 +1,119 @@
+/*
+ *	<GLOBAL STYLES>
+ */
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+		Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
+		sans-serif;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.container {
+	min-height: 100vh;
+	padding: 0 0.5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.form-control:disabled {
+	cursor: not-allowed;
+}
+/*
+ *	</GLOBAL STYLES>
+ */
+
+/*
+ *	<INDEX STYLES>
+ */
+$tickerSearchWidth: 350px;
+$tickerMargin: 1em;
+$tickerButtonSize: 95px;
+$tickerTrackerMargin: 5px;
+#tickerSearch {
+	width: $tickerSearchWidth;
+}
+#tickerSearch input {
+	border-radius: 0.5em 0.5em 0 0;
+}
+#tickerSearch input:focus {
+	outline-style: none;
+	box-shadow: none;
+	//border-color: transparent;
+}
+#tickerSearchResults {
+	// TODO: Improve
+	border-radius: 0 0 0 15px;
+	display: inline-block;
+	width: 100%;
+}
+.ticker {
+	display: flex;
+	flex-direction: row;
+	vertical-align: middle;
+}
+.ticker p {
+	text-align: left;
+	margin: $tickerMargin;
+	max-width: calc(100% - #{$tickerButtonSize} - #{2 * $tickerMargin} - #{$tickerTrackerMargin});
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.trackTicker {
+	margin: $tickerTrackerMargin;
+	margin-left: auto;
+	height: 2.5em;
+	align-self: center;
+	border: 1px solid gray;
+	border-radius: 0.15em;
+	cursor: pointer;
+	/* IDEA: Can use old 'info' endpoint to display a small preview of the performance of each ticker */
+	width: $tickerButtonSize;
+}
+.trackTicker_selected {
+	background-color: lightgreen;
+}
+
+main {
+	padding: 5rem 0;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+/*
+ *	</INDEX STYLES>
+ */
+
+/*
+ *	<SETTINGS STYLES>
+ */
+
+.profilePicture {
+	width: 64px;
+	height: 64px;
+	border-radius: 100%;
+}
+
+.btn-primary:disabled {
+	cursor: not-allowed;
+  pointer-events: all !important;
+}
+
+/*
+ *	</SETTINGS STYLES>
+ */

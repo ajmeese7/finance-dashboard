@@ -5,22 +5,22 @@ handler.use(middleware)
 const collectionName = 'users'
 
 handler.get(async (req, res) => {
-	const user = req.query.user
+	const email = req.query.email
 	const result = await req.db.collection(collectionName)
-		.find({ user: user }, { 'projection': { 'trackedTickers': 1 }})
+		.find({ user: email }, { 'projection': { 'trackedTickers': 1 }})
 		.next()
 	
-	// Returns an empty array if the user doesn't have a DB entry yet
-	res.json({ trackedTickers: result ? result.trackedTickers : [] })
+	res.json({ trackedTickers: result.trackedTickers })
 })
 
 handler.post(async (req, res) => {
 	const data = JSON.parse(req.body)
-	const user = data.user, tickers = data.trackedTickers
-	if (!tickers) res.status(400).json({ message: 'Invalid call to POST endpoint!' })
+	const email = data.email, tickers = data.trackedTickers
+	if (!tickers)
+		return res.status(400).json({ message: 'Invalid call to POST endpoint!' })
 	
-	let result = await req.db.collection(collectionName).updateOne(
-		{ user: user },
+	const result = await req.db.collection(collectionName).updateOne(
+		{ user: email },
 		{ $set: { trackedTickers: tickers }},
 		{ upsert: true }
 	)

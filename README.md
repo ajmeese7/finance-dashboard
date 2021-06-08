@@ -10,6 +10,13 @@ A dashboard to track performance of your stocks over time.
 - Implement a `.enc.dev` for production, like [here](https://nextjs.org/docs/basic-features/environment-variables)
 and [here](https://blog.logrocket.com/using-authentication-in-next-js/)
 
+## Wishlist
+- Option to change profile picture; haven't added yet because so far I don't need to store
+any images for this project and I wasn't looking to add storage outside MongoDB quite yet.
+- "Joint Net Worth" feature to see how much money is shared by two profiles; can be used
+for relationships/couples.
+- 404 page for username that doesn't exist, and private page indicator if applicable
+
 ## Development
 ### Install
 - `yarn`

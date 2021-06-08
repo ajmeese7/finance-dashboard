@@ -13,12 +13,10 @@ const options = {
 	],
 	secret: process.env.SECRET,
 	callbacks: {
-		/*redirect: async (url, _) => {
-			if (url === '/api/auth/signin') {
-				return Promise.resolve('/profile')
-			}
-			return Promise.resolve('/api/auth/signin')
-		},*/
+		// Always go to index page after login
+		redirect: async (url, baseUrl) => {
+			return baseUrl
+		},
 	},
 }
 
