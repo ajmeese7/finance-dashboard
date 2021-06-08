@@ -43,7 +43,7 @@ export default function DeleteAccount({ user }) {
 		</Button>
 		<Modal toggle={() => setModalOpen(!modalOpen)} isOpen={modalOpen} fade>
 			<div className="modal-header">
-				<h5 className="modal-title" id="exampleModalLabel">
+				<h5 className="modal-title">
 					Delete Account
 				</h5>
 				<button
@@ -79,7 +79,7 @@ export default function DeleteAccount({ user }) {
 					Cancel
 				</Button>
 				<Button
-					color="primary"
+					color="danger"
 					type="button"
 					onClick={() => {
 						deleteAccount()

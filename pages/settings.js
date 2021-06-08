@@ -10,12 +10,14 @@ import {
 } from 'reactstrap'
 import Login from '../components/Login'
 import Loading from '../components/Loading'
+import SetProfileURL from '../components/SetProfileURL'
 import DeleteAccount from '../components/DeleteAccount'
 const API_URL = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/api`
 
 export default function Settings(props) {
 	const [session, loading] = useSession()
 	const [profileIsPublic, setProfileIsPublic] = useState(props.profileIsPublic)
+	const [profileUrl, setProfileUrl] = useState(props.profileUrl)
 
 	// Updates the server data when the user's profileIsPublic setting is modified
 	useEffect(async () => {
@@ -45,7 +47,6 @@ export default function Settings(props) {
 			</Head>
 
 			<h1>Settings</h1>
-
 			<div>
 				{/* Can also add the multiavatar PFP as an option for users with an existing PFP. */}
 				<img
@@ -55,16 +56,10 @@ export default function Settings(props) {
 					src={session.user.image || `https://api.multiavatar.com/${email}.png`}
 				/>
 				<p>
-					{email /* Can have `|| username` if that option is later implemented */}
+					{profileUrl || email}
 				</p>
 			</div>
 
-			{/*
-				A̶d̶d̶ o̶p̶t̶i̶o̶n̶ t̶o̶ m̶a̶k̶e̶ p̶r̶o̶f̶i̶l̶e̶ p̶u̶b̶l̶i̶c̶, then choose permanent URL extension w̶i̶t̶h̶
-				t̶h̶e̶ u̶s̶e̶r̶n̶a̶m̶e̶ s̶u̶g̶g̶e̶s̶t̶e̶d̶ a̶s̶ b̶e̶f̶o̶r̶e̶ t̶h̶e̶ `̶@̶`̶ i̶n̶ t̶h̶e̶i̶r̶ e̶m̶a̶i̶l̶. Have a confirmation
-				popup and indicate that it cannot be changed in the future, then once it's
-				chosen disable the input box.
-			*/}
 			<FormGroup>
 				<Input
 					type="checkbox"
@@ -78,22 +73,27 @@ export default function Settings(props) {
 				</Label>
 			</FormGroup>
 
-			{/* Add a `Copy` button and make the input disabled after set */}
 			<FormGroup>
-				{/* TODO: Once this has been set once, make that the default value 
-				and have this disabled regardless of checked status */}
 				<Label for="profileURL">Profile URL</Label>
 				<Input
 					type="text"
 					name="profileURL"
 					id="profileURL"
 					placeholder={defaultUsername}
-					disabled={!profileIsPublic}
+					defaultValue={profileUrl || undefined}
+					disabled={!profileIsPublic || profileUrl}
 				/>
 				{/* TODO: Use bootstrap validity classes for indicating if a username is available here */}
 
 				{/* TODO: Display inline */}
-				<Button id="setProfileUrl" /*outline*/ color="success" /*onClick={setProfileUrl}*/>Set URL</Button>
+				{!profileUrl &&
+					<SetProfileURL
+						email={session.user.email}
+						profileIsPublic={profileIsPublic}
+						profileUrl={profileUrl}
+						setProfileUrl={setProfileUrl}
+					/>
+				}
 			</FormGroup>
 
 			{/* Add granular controls to what information users choose to share */}
@@ -105,6 +105,15 @@ export default function Settings(props) {
 	)
 }
 
+/** 
+ * Check for whether a username is valid and if it already 
+ * exists in the database.
+ */
+const validProfileUrl = () => {
+
+}
+
+/** Generates props on the server before the page is served to the user. */
 export async function getServerSideProps({ res, req }) {
 	const session = await getSession({ req })
 	if (!session) {
@@ -118,6 +127,7 @@ export async function getServerSideProps({ res, req }) {
   return {
     props: {
 			profileIsPublic: json.profileIsPublic,
+			profileUrl: json.profileUrl,
 		},
   }
 }

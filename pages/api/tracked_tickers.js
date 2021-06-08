@@ -22,7 +22,6 @@ handler.post(async (req, res) => {
 	const result = await req.db.collection(collectionName).updateOne(
 		{ user: email },
 		{ $set: { trackedTickers: tickers }},
-		{ upsert: true }
 	)
 
 	res.json({message: `${result.modifiedCount} document(s) was/were updated.`})

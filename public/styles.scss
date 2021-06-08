@@ -109,8 +109,8 @@ main {
 	border-radius: 100%;
 }
 
-.btn-primary:disabled {
-	cursor: not-allowed;
+.btn.disabled {
+	cursor: not-allowed !important;
   pointer-events: all !important;
 }
 
