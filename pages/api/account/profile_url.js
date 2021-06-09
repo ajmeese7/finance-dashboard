@@ -10,13 +10,13 @@ handler.get(async (req, res) => {
 	const result = await req.db.collection(collectionName)
 		.find({ user: email }, { 'projection': {
 			'profileIsPublic': 1,
-			'profileUrl': 1,
+			'username': 1,
 		}})
 		.next()
 
 	res.json({
 		profileIsPublic: result.profileIsPublic,
-		profileUrl: result.profileUrl,
+		username: result.username,
 	})
 })
 
@@ -24,7 +24,7 @@ handler.post(async (req, res) => {
 	const data = JSON.parse(req.body)
 	const email = data.email,
 	      profileIsPublic = data.profileIsPublic,
-				profileUrl = data.profileUrl
+				username = data.username
 	const session = await getSession({ req })
 
 	if (!session || session.user.email != email)
@@ -34,9 +34,9 @@ handler.post(async (req, res) => {
 	
 	let result = await req.db.collection(collectionName).updateOne(
 		{ user: email },
-		{ $set: profileUrl ?
-			// Sets profile URL if available and profileIsPublic if not
-			{ profileUrl: profileUrl } :
+		{ $set: username ?
+			// Sets username if available and profileIsPublic if not
+			{ username: username } :
 			{ profileIsPublic: profileIsPublic }
 		},
 	)

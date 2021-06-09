@@ -10,50 +10,51 @@ import {
 } from 'reactstrap'
 const API_URL = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/api`
 
-export default function SetProfileURL({ email, profileIsPublic, setProfileUrl }) {
+export default function SetUsername({ email, profileIsPublic, setUsername }) {
 	const [modalOpen, setModalOpen] = useState(false)
-	const [urlValid, setUrlValid] = useState(false)
-	const [userURL, setUserURL] = useState()
+	const [usernameValid, setUsernameValid] = useState(false)
+	const [newUsername, setNewUsername] = useState()
 
-	const confirmUrl = async () => {
+	const confirmUsername = async () => {
 		const res = await fetch(`${API_URL}/account/profile_url`, {
 			method: 'post',
 			body: JSON.stringify({
 				email: email,
-				profileUrl: userURL,
+				username: newUsername,
 			})
 		})
 
 		// TODO: Popup if successful
-		if (res.ok) return console.log("Successfully set profile URL!")
-		console.error('There was a problem deleting your account!')
+		if (res.ok) return console.log("Successfully set username!")
+		console.error('There was a problem setting your username!')
 	}
 
-	/** Enables form submission if the input value matches the previously entered URL. */
+	/** Enables form submission if the input value matches the previously entered username. */
 	const checkInputValue = (event) => {
+		// IDEA: Use this comparison directly in where the state is needed
 		const value = event.target.value
-		setUrlValid(value === userURL)
+		setUsernameValid(value === newUsername)
 	}
 
 	return (<>
 		<Button
-			id="setProfileUrl"
+			id="setUsername"
 			type="button"
 			color="success"
 			onClick={() => {
-				setUserURL(document.getElementById("profileURL").value)
-				setUrlValid(false)
+				setNewUsername(document.getElementById("username").value)
+				setUsernameValid(false)
 				setModalOpen(!modalOpen)
 			}}
 			disabled={!profileIsPublic}
 		>
-			Set URL
+			Set Username
 		</Button>
 
 		<Modal toggle={() => setModalOpen(!modalOpen)} isOpen={modalOpen} fade>
 			<div className="modal-header">
 				<h5 className="modal-title"> 
-					Set Profile URL
+					Set Username
 				</h5>
 				<button
 					aria-label="Close"
@@ -65,15 +66,15 @@ export default function SetProfileURL({ email, profileIsPublic, setProfileUrl })
 			<ModalBody>
 				<p>
 					Please note that <strong>this action is irreversable</strong>, you will be
-					unable to change your profile URL in the future.
+					unable to change your username in the future.
 				</p>
 				<FormGroup>
-					<Label for="confirmProfileURL">Confirm URL:</Label>
+					<Label for="confirmUsername">Confirm Username:</Label>
 					<Input
 						type="text"
-						name="confirmProfileURL"
-						id="confirmProfileURL"
-						placeholder={userURL}
+						name="confirmUsername"
+						id="confirmUsername"
+						placeholder={newUsername}
 						onChange={checkInputValue}
 						required
 					/>
@@ -91,13 +92,13 @@ export default function SetProfileURL({ email, profileIsPublic, setProfileUrl })
 					color="success"
 					type="button"
 					onClick={() => {
-						confirmUrl()
-						setProfileUrl(userURL)
+						confirmUsername()
+						setUsername(newUsername)
 						setModalOpen(!modalOpen)
 					}}
-					disabled={!urlValid}
+					disabled={!usernameValid}
 				>
-					Confirm URL
+					Confirm Username
 				</Button>
 			</ModalFooter>
 		</Modal>

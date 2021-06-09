@@ -10,14 +10,14 @@ import {
 } from 'reactstrap'
 import Login from '../components/Login'
 import Loading from '../components/Loading'
-import SetProfileURL from '../components/SetProfileURL'
+import SetUsername from '../components/SetUsername'
 import DeleteAccount from '../components/DeleteAccount'
 const API_URL = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/api`
 
 export default function Settings(props) {
 	const [session, loading] = useSession()
 	const [profileIsPublic, setProfileIsPublic] = useState(props.profileIsPublic)
-	const [profileUrl, setProfileUrl] = useState(props.profileUrl)
+	const [username, setUsername] = useState(props.username)
 
 	// Updates the server data when the user's profileIsPublic setting is modified
 	useEffect(async () => {
@@ -56,7 +56,7 @@ export default function Settings(props) {
 					src={session.user.image || `https://api.multiavatar.com/${email}.png`}
 				/>
 				<p>
-					{profileUrl || email}
+					{username || email}
 				</p>
 			</div>
 
@@ -74,24 +74,24 @@ export default function Settings(props) {
 			</FormGroup>
 
 			<FormGroup>
-				<Label for="profileURL">Profile URL</Label>
+				<Label for="username">Username</Label>
 				<Input
 					type="text"
-					name="profileURL"
-					id="profileURL"
+					name="username"
+					id="username"
 					placeholder={defaultUsername}
-					defaultValue={profileUrl || undefined}
-					disabled={!profileIsPublic || profileUrl}
+					defaultValue={username || undefined}
+					disabled={!profileIsPublic || username}
 				/>
 				{/* TODO: Use bootstrap validity classes for indicating if a username is available here */}
 
 				{/* TODO: Display inline */}
-				{!profileUrl &&
-					<SetProfileURL
+				{!username &&
+					<SetUsername
 						email={session.user.email}
 						profileIsPublic={profileIsPublic}
-						profileUrl={profileUrl}
-						setProfileUrl={setProfileUrl}
+						username={username}
+						setUsername={setUsername}
 					/>
 				}
 			</FormGroup>
@@ -109,7 +109,7 @@ export default function Settings(props) {
  * Check for whether a username is valid and if it already 
  * exists in the database.
  */
-const validProfileUrl = () => {
+const validUsername = () => {
 
 }
 
@@ -122,12 +122,13 @@ export async function getServerSideProps({ res, req }) {
 		res.end()
 	}
 
+	// TODO: Work on this file name
 	const userData = await fetch(`${API_URL}/account/profile_url?email=${session.user.email}`)
 	const json = await userData.json()
   return {
     props: {
 			profileIsPublic: json.profileIsPublic,
-			profileUrl: json.profileUrl,
+			username: json.username,
 		},
   }
 }

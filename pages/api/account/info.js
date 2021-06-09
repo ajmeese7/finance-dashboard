@@ -22,7 +22,7 @@ handler.put(async (req, res) => {
 		{ $setOnInsert: {
 			// Will only run if the user hasn't been inserted yet
 			profileIsPublic: false,
-			profileUrl: null,
+			username: null,
 			trackedTickers: [],
 		}},
 		{ upsert: true }
@@ -47,13 +47,13 @@ handler.get(async (req, res) => {
 	const accountData = await req.db.collection(collectionName)
 		.find({ user: email }, { 'projection': {
 			'profileIsPublic': 1,
-			'profileURL': 1,
+			'username': 1,
 		}})
 		.next()
 	
 	res.json({
 		profileIsPublic: accountData.profileIsPublic,
-		profileURL: accountData.profileURL
+		username: accountData.username
 	})
 })
 
