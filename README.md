@@ -9,6 +9,8 @@ A dashboard to track performance of your stocks over time.
 - Run this command again to make sure it worked: `npx react-codemod rename-unsafe-lifecycles`
 - Implement a `.enc.dev` for production, like [here](https://nextjs.org/docs/basic-features/environment-variables)
 and [here](https://blog.logrocket.com/using-authentication-in-next-js/)
+- Need to kill Mongo connections after a certain amount of time somehow, and have a
+procedure to re-establish connectivity should the need arise while a tab is still open.
 
 ## Wishlist
 - Option to change profile picture; haven't added yet because so far I don't need to store

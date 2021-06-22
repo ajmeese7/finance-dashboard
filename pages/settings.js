@@ -125,8 +125,8 @@ export async function getServerSideProps({ res, req }) {
 	// TODO: Work on this file name
 	const userData = await fetch(`${API_URL}/account/profile_url?email=${session.user.email}`)
 	const json = await userData.json()
-  return {
-    props: {
+	return {
+		props: {
 			profileIsPublic: json.profileIsPublic,
 			username: json.username,
 		},

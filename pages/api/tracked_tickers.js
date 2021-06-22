@@ -7,8 +7,7 @@ const collectionName = 'users'
 handler.get(async (req, res) => {
 	const email = req.query.email
 	const result = await req.db.collection(collectionName)
-		.find({ user: email }, { 'projection': { 'trackedTickers': 1 }})
-		.next()
+		.findOne({ user: email }, { _id: 0, trackedTickers: 1 })
 	
 	res.json({ trackedTickers: result.trackedTickers })
 })

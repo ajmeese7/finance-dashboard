@@ -53,7 +53,7 @@ export default function SetUsername({ email, profileIsPublic, setUsername }) {
 
 		<Modal toggle={() => setModalOpen(!modalOpen)} isOpen={modalOpen} fade>
 			<div className="modal-header">
-				<h5 className="modal-title"> 
+				<h5 className="modal-title">
 					Set Username
 				</h5>
 				<button

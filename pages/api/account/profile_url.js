@@ -5,15 +5,21 @@ const handler = nextConnect()
 handler.use(middleware)
 const collectionName = 'users'
 
+// Searches for user by email or username, depending on which
+// URL parameter is passed
 handler.get(async (req, res) => {
-	const email = req.query.email
+	// TODO: Verify session here?
+	const email = req.query.email,
+	      username = req.query.username
+	const searchQuery = email ? { user: email } : { username: username }
 	const result = await req.db.collection(collectionName)
-		.find({ user: email }, { 'projection': {
-			'profileIsPublic': 1,
-			'username': 1,
-		}})
-		.next()
+		.findOne(searchQuery, {
+			profileIsPublic: 1,
+			username: 1,
+		})
 
+	// Returns good request with no data if username is available
+	if (result === null) return res.json({})
 	res.json({
 		profileIsPublic: result.profileIsPublic,
 		username: result.username,

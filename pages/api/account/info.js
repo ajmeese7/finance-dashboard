@@ -39,17 +39,18 @@ handler.get(async (req, res) => {
 	const email = req.query.email
 	const session = await getSession({ req })
 
-	if (!session || session.user.email != email)
+	if (!session || session.user.email != email) {
 		return res.status(403).json({
 			message: 'You must be signed in to get account data',
 		})
+	}
 
 	const accountData = await req.db.collection(collectionName)
-		.find({ user: email }, { 'projection': {
-			'profileIsPublic': 1,
-			'username': 1,
-		}})
-		.next()
+		.findOne({ user: email }, {
+			_id: 0,
+			profileIsPublic: 1,
+			username: 1,
+		})
 	
 	res.json({
 		profileIsPublic: accountData.profileIsPublic,
