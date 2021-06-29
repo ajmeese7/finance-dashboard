@@ -10,7 +10,7 @@ import {
 } from 'reactstrap'
 const API_URL = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/api`
 
-export default function SetUsername({ email, profileIsPublic, setUsername }) {
+export default function SetUsername({ email, profileIsPublic, setUsername, usernameAvailable }) {
 	const [modalOpen, setModalOpen] = useState(false)
 	const [usernameValid, setUsernameValid] = useState(false)
 	const [newUsername, setNewUsername] = useState()
@@ -31,7 +31,6 @@ export default function SetUsername({ email, profileIsPublic, setUsername }) {
 
 	/** Enables form submission if the input value matches the previously entered username. */
 	const checkInputValue = (event) => {
-		// IDEA: Use this comparison directly in where the state is needed
 		const value = event.target.value
 		setUsernameValid(value === newUsername)
 	}
@@ -46,7 +45,7 @@ export default function SetUsername({ email, profileIsPublic, setUsername }) {
 				setUsernameValid(false)
 				setModalOpen(!modalOpen)
 			}}
-			disabled={!profileIsPublic}
+			disabled={!profileIsPublic || !usernameAvailable}
 		>
 			Set Username
 		</Button>

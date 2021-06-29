@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { signOut, useSession, getSession } from 'next-auth/client'
 import {
 	Button,
+	Form,
 	FormGroup,
 	Input,
 	Label,
@@ -14,10 +15,20 @@ import SetUsername from '../components/SetUsername'
 import DeleteAccount from '../components/DeleteAccount'
 const API_URL = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/api`
 
+/** Codes to display username validity by the input box. */
+const UsernameStates = Object.freeze({
+	Null: 0,
+	Available: 1,
+	Taken: 2,
+	TooShort: 3,
+	TooLong: 4,
+})
+
 export default function Settings(props) {
 	const [session, loading] = useSession()
 	const [profileIsPublic, setProfileIsPublic] = useState(props.profileIsPublic)
 	const [username, setUsername] = useState(props.username)
+	const [usernameState, setUsernameState] = useState(UsernameStates.Null)
 
 	// Updates the server data when the user's profileIsPublic setting is modified
 	useEffect(async () => {
@@ -39,6 +50,27 @@ export default function Settings(props) {
 	const email = session.user.email
 	const defaultUsername = email.split('@')[0]
 
+	/**
+	 * Check for whether a username is valid and if it already 
+	 * exists in the database.
+	 */
+	const validUsername = async (event) => {
+		const username = event.target.value
+		if (username.length == 0)
+			return setUsernameState(UsernameStates.Null)
+		if (username.length < 5)
+			return setUsernameState(UsernameStates.TooShort)
+		if (username.length > 15)
+			return setUsernameState(UsernameStates.TooLong)
+
+		const result = await fetch(`${API_URL}/account/profile_url?username=${username}`)
+		const json = await result.json()
+		return setUsernameState(Object.keys(json).length ?
+			// https://stackoverflow.com/a/39565817/6456163
+			UsernameStates.Taken : UsernameStates.Available
+		)
+	}
+
 	return (
 		<div className="container">
 			<Head>
@@ -55,62 +87,86 @@ export default function Settings(props) {
 					title={`${session.user.name || defaultUsername}'s profile picture`}
 					src={session.user.image || `https://api.multiavatar.com/${email}.png`}
 				/>
-				<p>
-					{username || email}
-				</p>
+				<p className="d-inline-block">{username || email}</p>
 			</div>
 
-			<FormGroup>
-				<Input
-					type="checkbox"
-					name="publicProfile"
-					id="publicProfile"
-					checked={profileIsPublic}
-					onChange={() => setProfileIsPublic(!profileIsPublic)}
-				/>
-				<Label for="publicProfile" className="ms-1 user-select-none">
-					Make profile public
-				</Label>
-			</FormGroup>
+			<Form>
+				<FormGroup>
+					<Input
+						type="checkbox"
+						name="publicProfile"
+						id="publicProfile"
+						checked={profileIsPublic}
+						onChange={() => setProfileIsPublic(!profileIsPublic)}
+					/>
+					<Label for="publicProfile" className="ms-1 user-select-none">
+						Make profile public
+					</Label>
+				</FormGroup>
 
-			<FormGroup>
-				<Label for="username">Username</Label>
-				<Input
-					type="text"
-					name="username"
-					id="username"
-					placeholder={defaultUsername}
-					defaultValue={username || undefined}
-					disabled={!profileIsPublic || username}
-				/>
-				{/* TODO: Use bootstrap validity classes for indicating if a username is available here */}
+				<FormGroup className="m-0 d-inline-block p-0">
+					<Label for="username">Username</Label>
+					{/*<div style={{ display: "flex", flexDirection: "row" }}*/}
+					<Input
+						type="text"
+						name="username"
+						id="username"
+						className={usernameState == UsernameStates.Available ?
+							"is-valid" : usernameState !== UsernameStates.Null ? "is-invalid" : ""}
+						placeholder={defaultUsername}
+						defaultValue={username || undefined}
+						onChange={validUsername}
+						disabled={!profileIsPublic || username}
+						required
+					/>
+					<UsernameFeedback usernameState={usernameState} />
+				</FormGroup>
 
-				{/* TODO: Display inline */}
+				{/* TODO: Make this display inline with the text input */}
 				{!username &&
 					<SetUsername
 						email={session.user.email}
 						profileIsPublic={profileIsPublic}
 						username={username}
 						setUsername={setUsername}
+						usernameAvailable={usernameState == UsernameStates.Available}
 					/>
 				}
-			</FormGroup>
+			</Form>
 
-			{/* Add granular controls to what information users choose to share */}
-
-			{/* TODO: Display inline */}
-			<Button id="signOut" onClick={signOut}>Sign out</Button>
-			<DeleteAccount user={session.user} />
+			{/* TODO: Add granular controls to what information users choose to share */}
+			<div className="flex">
+				<div className="m-1 d-inline-block">
+					<Button id="signOut" onClick={signOut}>Sign out</Button>
+				</div>
+				<div className="m-1 d-inline-block">
+					<DeleteAccount user={session.user} />
+				</div>
+			</div>
 		</div>
 	)
 }
 
-/** 
- * Check for whether a username is valid and if it already 
- * exists in the database.
- */
-const validUsername = () => {
-
+/** Tooltip explaining validity of username. */
+const UsernameFeedback = ({ usernameState }) => {
+	// Valid username that is available
+	if (usernameState == UsernameStates.Available)
+		return (
+			<div className="valid-feedback">
+				That username is available!
+			</div>
+		)
+	
+	return (
+		<div className="invalid-feedback">
+			{usernameState == UsernameStates.Taken &&
+				"That username is taken!"}
+			{usernameState == UsernameStates.TooShort &&
+				"That username is too short!"}
+			{usernameState == UsernameStates.TooLong &&
+				"That username is too long!"}
+		</div>
+	)
 }
 
 /** Generates props on the server before the page is served to the user. */
