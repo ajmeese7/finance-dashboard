@@ -13,7 +13,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bootstrap": "^5.0.0",
     "dotenv": "^9.0.0",
     "isomorphic-unfetch": "^3.1.0",
