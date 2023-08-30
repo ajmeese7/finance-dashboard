@@ -17,7 +17,7 @@
     "bootstrap": "^5.0.0",
     "dotenv": "^9.0.0",
     "isomorphic-unfetch": "^3.1.0",
-    "mongodb": "^3.6.6",
+    "mongodb": "^3.6.10",
     "next": "^12.1.0",
     "next-auth": "^4.20.1",
     "next-connect": "^0.10.1",
